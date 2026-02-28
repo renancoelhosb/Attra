@@ -1146,95 +1146,45 @@ const stageTitle = document.getElementById('stageTitle');
 
             const WORLD_CONFIG = {
                 unlockPhrase: 'Haja luz',
-                stages: [
-                    {
-                        id: 'habitavel',
-                        title: 'Habitabilidade',
-                        desc: 'Os registros dizem que tudo começa com três fundamentos.',
-                        required: ['agua', 'terra', 'atmosfera'],
-                        unlocks: ['arvores', 'pessoas', 'fogo'],
-                        cam: { zoom: 1.0, fx: 0.00, fy: 0.00 }
-                    },
-                    {
-                        id: 'primeiros_passos',
-                        title: 'Primeiros passos',
-                        desc: 'Sinais de vida… e de intenção.',
-                        required: ['arvores', 'pessoas', 'fogo'],
-                        unlocks: ['casa', 'aldeia', 'templo', 'escrita'],
-                        cam: { zoom: 1.35, fx: -0.12, fy: 0.10 }
-                    },
-                    {
-                        id: 'civilizacao',
-                        title: 'Civilização',
-                        desc: 'O idioma não nasce do nada: ele cresce junto de um povo.',
-                        required: ['casa', 'aldeia', 'templo', 'escrita'],
-                        unlocks: [],
-                        cam: { zoom: 1.65, fx: -0.22, fy: 0.16 }
-                    }
+                planets: [
+                    { key:'mercurio', label:'Mercúrio', color:'#8f8a85', size:0.38, required:['crateras','nucleo','exosfera','extremos'] },
+                    { key:'venus', label:'Vênus', color:'#d7b17d', size:0.95, required:['atmosfera densa','nuvens acidas','estufa','vulcoes'] },
+                    { key:'terra', label:'Terra', color:'#5f84d7', size:1.0, required:['agua','terra','atmosfera','vegetacao','humanos'] },
+                    { key:'marte', label:'Marte', color:'#c76f4a', size:0.53, required:['poeira','gelo','atmosfera fina','vulcoes'] },
+                    { key:'jupiter', label:'Júpiter', color:'#d2a67f', size:11.2, required:['hidrogenio','helio','tempestades','mancha vermelha'] },
+                    { key:'saturno', label:'Saturno', color:'#d9c080', size:9.45, required:['aneis','hidrogenio','helio','luas'] },
+                    { key:'urano', label:'Urano', color:'#9ed8d8', size:4.0, required:['metano','aneis','inclinacao','frio'] },
+                    { key:'netuno', label:'Netuno', color:'#568ad9', size:3.88, required:['metano','ventos','tempestades','frio'] }
                 ]
             };
 
+            const PLANET_BY_KEY = Object.fromEntries(WORLD_CONFIG.planets.map(p => [p.key, p]));
+            const PLANET_WORDS = new Set(WORLD_CONFIG.planets.map(p => p.key));
+            const PLANET_ORDER = WORLD_CONFIG.planets.map(p => p.key);
 
             function isWorldCommand(word){
                 if(!word) return false;
                 const w = normalizeWord(word);
                 if (w === normalizeWord(WORLD_CONFIG.unlockPhrase)) return true;
-                if (w === 'humano') return true; // alias
-                for (const st of (WORLD_CONFIG.stages||[])){
-                    for (const a of (st.required||[])) if (normalizeWord(a) === w) return true;
-                    for (const a of (st.unlocks||[])) if (normalizeWord(a) === w) return true;
+                if (PLANET_WORDS.has(w)) return true;
+                for (const planet of WORLD_CONFIG.planets){
+                    for (const req of planet.required){
+                        if (normalizeWord(req) === w) return true;
+                    }
                 }
                 return false;
             }
 
-
-
-            // “Lore” (protótipo): edite à vontade
             const LORE = {
-                'haja luz': {
-                    title: 'Haja luz',
-                    lore: 'A primeira fórmula. Entre os povos ATTRA, era um rito de permissão: nenhuma palavra podia “tocar o mundo” antes da luz.'
-                },
-                'agua': {
-                    title: 'Água',
-                    lore: 'Chamavam-na de “memória líquida”. Para eles, a água guardava o eco das primeiras formas.'
-                },
-                'terra': {
-                    title: 'Terra',
-                    lore: 'A “pele do mundo”. A terra era sagrada porque recebia as marcas — passos, fogueiras, inscrições.'
-                },
-                'atmosfera': {
-                    title: 'Atmosfera',
-                    lore: 'O “manto invisível”. Diziam que sem o manto, o mundo não ouvia.'
-                },
-                'arvores': {
-                    title: 'Árvores',
-                    lore: 'As primeiras “colunas” do céu. Os anciões registravam nomes sob as árvores, como se fossem arquivos vivos.'
-                },
-                'pessoas': {
-                    title: 'Pessoas',
-                    lore: 'Não era só “gente”. Era “testemunho”. Uma palavra só se tornava real quando era testemunhada.'
-                },
-                'fogo': {
-                    title: 'Fogo',
-                    lore: 'O fogo era “janela”. Em volta dele, o idioma ganhava ritmo e virava canto.'
-                },
-                'casa': {
-                    title: 'Casa',
-                    lore: 'A casa era o primeiro “símbolo fixo” no chão — por isso, a escrita floresceu depois dela.'
-                },
-                'aldeia': {
-                    title: 'Aldeia',
-                    lore: 'Aldeia significava “concordância”. Uma coleção de casas que decidiu partilhar um nome.'
-                },
-                'templo': {
-                    title: 'Templo',
-                    lore: 'Não era só religião — era arquivo. O templo guardava mapas de traços e histórias de palavras.'
-                },
-                'escrita': {
-                    title: 'Escrita',
-                    lore: 'O ATTRA surge aqui: traços que servem para lembrar… e para invocar.'
-                }
+                'haja luz': { title: 'Haja luz', lore: 'A fórmula que desperta a estrela central e revela o sistema.' },
+                'mercurio': { title: 'Mercúrio', lore: 'Pequeno, rochoso e cheio de crateras. Quase sem atmosfera.' },
+                'venus': { title: 'Vênus', lore: 'Atmosfera extremamente densa e forte efeito estufa.' },
+                'terra': { title: 'Terra', lore: 'Mundo de água líquida, atmosfera estável, vegetação e vida complexa.' },
+                'marte': { title: 'Marte', lore: 'Frio, seco e poeirento, com calotas de gelo e atmosfera fina.' },
+                'jupiter': { title: 'Júpiter', lore: 'Gigante gasoso com tempestades imensas, incluindo a Grande Mancha Vermelha.' },
+                'saturno': { title: 'Saturno', lore: 'Gigante gasoso famoso por seus anéis e seu grande conjunto de luas.' },
+                'urano': { title: 'Urano', lore: 'Gigante gelado rico em metano, com eixo muito inclinado.' },
+                'netuno': { title: 'Netuno', lore: 'Gigante gelado azul, com ventos extremos e tempestades intensas.' }
             };
 
             function normalizeWord(s){
@@ -1242,30 +1192,33 @@ const stageTitle = document.getElementById('stageTitle');
                     .trim()
                     .toLowerCase()
                     .normalize('NFD')
-                    .replace(/[\u0300-\u036f]/g, '');
+                    .replace(/[̀-ͯ]/g, '');
             }
 
             function loadWorldState(){
                 try{
                     const raw = localStorage.getItem(WORLD_STATE_KEY);
-                    if(!raw) return {
-                        stageIndex: 0,
-                        applied: [],
-                        features: { light:false },
-                        lightLevel: 0,
-                        humans: [],
-                        cam: { zoom: 1.0, fx:0, fy:0 }
+                    const obj = raw ? JSON.parse(raw) : {};
+                    const created = Array.isArray(obj.createdPlanets) ? obj.createdPlanets.map(normalizeWord).filter(k => PLANET_BY_KEY[k]) : [];
+                    const feat = obj.planetFeatures && typeof obj.planetFeatures === 'object' ? obj.planetFeatures : {};
+                    const cleanedFeat = {};
+                    for (const k of Object.keys(feat)){
+                        if (!PLANET_BY_KEY[k]) continue;
+                        cleanedFeat[k] = Array.isArray(feat[k]) ? feat[k].map(normalizeWord) : [];
+                    }
+                    return {
+                        lightOn: !!(obj.lightOn || obj?.features?.light || localStorage.getItem(WORLD_KEY)==='1'),
+                        lightLevel: typeof obj.lightLevel === 'number' ? obj.lightLevel : (obj?.features?.light ? 1 : 0),
+                        createdPlanets: created,
+                        activePlanet: PLANET_BY_KEY[obj.activePlanet] ? obj.activePlanet : (created[0] || 'terra'),
+                        planetFeatures: cleanedFeat,
+                        camX: typeof obj.camX === 'number' ? obj.camX : 0,
+                        camTargetX: typeof obj.camTargetX === 'number' ? obj.camTargetX : (typeof obj.camX === 'number' ? obj.camX : 0)
                     };
-                    const obj = JSON.parse(raw);
-                    obj.features = obj.features || { light:false };
-                    if (typeof obj.lightLevel !== 'number') obj.lightLevel = obj.features.light ? 1 : 0;
-                    obj.humans = obj.humans || [];
-                    obj.applied = obj.applied || [];
-                    obj.stageIndex = typeof obj.stageIndex === 'number' ? obj.stageIndex : 0;
-                    obj.cam = obj.cam || { zoom: 1.0, fx:0, fy:0 };
-                    return obj;
                 }catch(e){
-                    return { stageIndex:0, applied:[], features:{ light:true }, cam:{ zoom:1.0, fx:0, fy:0 } };
+                    return {
+                        lightOn:false, lightLevel:0, createdPlanets:[], activePlanet:'terra', planetFeatures:{}, camX:0, camTargetX:0
+                    };
                 }
             }
 
@@ -1276,48 +1229,32 @@ const stageTitle = document.getElementById('stageTitle');
             function loadPrints(){
                 try{
                     const raw = localStorage.getItem(PRINTS_KEY);
-                    return raw ? JSON.parse(raw) : [];
-                }catch(e){
-                    return [];
-                }
+                    if(!raw) return [];
+                    const arr = JSON.parse(raw);
+                    return Array.isArray(arr) ? arr : [];
+                }catch(e){ return []; }
             }
 
             function savePrints(arr){
                 localStorage.setItem(PRINTS_KEY, JSON.stringify(arr));
             }
 
-            function setHasNew(flag){
-                localStorage.setItem(NEW_KEY, flag ? '1' : '0');
-            }
-            function hasNew(){
-                return localStorage.getItem(NEW_KEY) === '1';
-            }
+            function setHasNew(flag){ localStorage.setItem(NEW_KEY, flag ? '1' : '0'); }
+            function hasNew(){ return localStorage.getItem(NEW_KEY) === '1'; }
 
             function addPrint(text, kind, extra={}){
                 const prints = loadPrints();
                 const entry = {
-                    id: (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2),
                     text,
                     norm: normalizeWord(text),
-                    kind,
-                    ts: Date.now(),
-                    ...extra
+                    kind: kind || 'word',
+                    stage: extra.stage || '',
+                    ts: Date.now()
                 };
-                prints.unshift(entry);
+                prints.push(entry);
+                if (prints.length > 200) prints.shift();
                 savePrints(prints);
-
-                // badge
-                if (badgeWorld){
-                    if (badgeWorld.classList.contains('hidden')){
-                        showBadge(badgeWorld);
-                    } else {
-                        badgeWorld.classList.remove('blink');
-                        void badgeWorld.offsetWidth;
-                        badgeWorld.classList.add('blink');
-                    }
-                }
                 setHasNew(true);
-                return entry;
             }
 
             function showToast(msg){
@@ -1325,9 +1262,7 @@ const stageTitle = document.getElementById('stageTitle');
                 worldToast.textContent = msg;
                 worldToast.classList.remove('hidden');
                 clearTimeout(showToast._t);
-                showToast._t = setTimeout(() => {
-                    worldToast.classList.add('hidden');
-                }, 2400);
+                showToast._t = setTimeout(() => worldToast.classList.add('hidden'), 1800);
             }
 
             function setView(v){
@@ -1335,509 +1270,31 @@ const stageTitle = document.getElementById('stageTitle');
                 if (worldView) worldView.classList.toggle('hidden', v !== 'world');
                 if (archiveView) archiveView.classList.toggle('hidden', v !== 'archive');
                 if (learnView) learnView.classList.toggle('hidden', v !== 'learn');
-
-                // quando em telas, esconda o output (mas continue renderizando pra “prints”)
-                if (v === 'translator'){
-                    output.style.display = '';
-                } else {
-                    output.style.display = 'none';
-                }
+                if (v === 'translator') output.style.display = '';
+                else output.style.display = 'none';
             }
 
-            
-            // ======= V6: Aprender (quiz + árvore) =======
-            const LEARN_HIGHSCORE_KEY = 'attraLearnHighV6';
-            const LEARN_STAGE_UNLOCK_KEY = 'attraLearnStageUnlockV6';
-
-            const learnStagesWrap = document.getElementById('learnStages');
-            const learnStageNow = document.getElementById('learnStageNow');
-            const learnScoreEl = document.getElementById('learnScore');
-            const learnComboEl = document.getElementById('learnCombo');
-            const learnLivesEl = document.getElementById('learnLives');
-            const learnBestScoreEl = document.getElementById('learnBestScore');
-            const learnFeedbackEl = document.getElementById('learnFeedback');
-            const learnAnswerInput = document.getElementById('learnAnswerInput');
-            const btnLearnSend = document.getElementById('btnLearnSend');
-            const learnSymbolImg = document.getElementById('learnSymbolImg');
-            const learnSymbolFallback = document.getElementById('learnSymbolFallback');
-            const learnOverlay = document.getElementById('learnOverlay');
-            const learnOverlayTitle = document.getElementById('learnOverlayTitle');
-            const learnOverlayText = document.getElementById('learnOverlayText');
-            const btnLearnOverlayAction = document.getElementById('btnLearnOverlayAction');
-            const learnTreeCanvas = document.getElementById('learnTreeCanvas');
-            const learnTreeCaption = document.getElementById('learnTreeCaption');
-            const learnTreeCtx = learnTreeCanvas ? learnTreeCanvas.getContext('2d') : null;
-
-            const LEARN_STAGE_CONFIG = [
-                {
-                    id: 1,
-                    title: 'Etapa 1',
-                    desc: 'Reconheça as letras básicas do ATTRA.',
-                    letters: 'abcdefghijklmnopqrstuvwxyz'.split('')
-                },
-                { id: 2, title: 'Etapa 2', desc: 'Bloqueada por enquanto.', letters: [] },
-                { id: 3, title: 'Etapa 3', desc: 'Bloqueada por enquanto.', letters: [] },
-                { id: 4, title: 'Etapa 4', desc: 'Bloqueada por enquanto.', letters: [] }
-            ];
-
-            const learnState = {
-                currentStageId: 1,
-                unlockedStage: Math.max(1, parseInt(localStorage.getItem(LEARN_STAGE_UNLOCK_KEY) || '1', 10) || 1),
-                active: false,
-                gameOver: false,
-                score: 0,
-                combo: 0,
-                lives: 3,
-                answered: 0,
-                correctTotal: 0,
-                cycleCount: 0,
-                treeProgress: 0,   // 0..1 dentro do ciclo atual
-                treePhase: 0,      // quantas árvores completas já passaram
-                promptLetter: null,
-                lastPromptLetter: null,
-                flash: 0,          // -1 erro / +1 acerto
-                feedbackTimeout: 0
-            };
-
-            function getLearnHighScore(){
-                return parseInt(localStorage.getItem(LEARN_HIGHSCORE_KEY) || '0', 10) || 0;
-            }
-            function setLearnHighScore(v){
-                const cur = getLearnHighScore();
-                if (v > cur) localStorage.setItem(LEARN_HIGHSCORE_KEY, String(v));
-            }
-
-            function renderLearnStages(){
-                if (!learnStagesWrap) return;
-                learnStagesWrap.innerHTML = '';
-                LEARN_STAGE_CONFIG.forEach((s) => {
-                    const row = document.createElement('button');
-                    row.type = 'button';
-                    row.className = 'learn-stage-row';
-                    if (s.id === learnState.currentStageId) row.classList.add('active');
-                    const unlocked = s.id <= learnState.unlockedStage;
-                    if (!unlocked) row.disabled = true;
-
-                    const label = document.createElement('span');
-                    label.textContent = s.title;
-                    const tag = document.createElement('span');
-                    tag.className = 'learn-stage-tag';
-                    tag.textContent = unlocked ? (s.id === 1 ? 'Desbloqueada' : 'Em breve') : 'Bloqueada';
-
-                    row.appendChild(label);
-                    row.appendChild(tag);
-                    row.addEventListener('click', () => {
-                        if (!unlocked) return;
-                        startLearnStage(s.id);
-                    });
-                    learnStagesWrap.appendChild(row);
-                });
-            }
-
-            function updateLearnHud(){
-                if (learnStageNow) learnStageNow.textContent = String(learnState.currentStageId);
-                if (learnScoreEl) learnScoreEl.textContent = String(learnState.score);
-                if (learnComboEl) learnComboEl.textContent = String(learnState.combo);
-                if (learnLivesEl) learnLivesEl.textContent = String(learnState.lives);
-                if (learnBestScoreEl) learnBestScoreEl.textContent = String(getLearnHighScore());
-            }
-
-            function showLearnFeedback(msg, kind){
-                if (!learnFeedbackEl) return;
-                learnFeedbackEl.textContent = msg || '';
-                learnFeedbackEl.classList.remove('ok', 'err');
-                if (kind) learnFeedbackEl.classList.add(kind);
-            }
-
-            function setLearnOverlay(title, text, buttonLabel, hidden){
-                if (!learnOverlay) return;
-                learnOverlay.classList.toggle('hidden', !!hidden);
-                if (learnOverlayTitle) learnOverlayTitle.textContent = title || '';
-                if (learnOverlayText) learnOverlayText.textContent = text || '';
-                if (btnLearnOverlayAction) btnLearnOverlayAction.textContent = buttonLabel || 'Começar';
-            }
-
-            function pickNextLearnPrompt(){
-                const stage = LEARN_STAGE_CONFIG.find(s => s.id === learnState.currentStageId) || LEARN_STAGE_CONFIG[0];
-                const letters = (stage.letters && stage.letters.length) ? stage.letters : ['a'];
-                let pool = letters;
-                if (letters.length > 1 && learnState.lastPromptLetter) {
-                    const filtered = letters.filter(l => l !== learnState.lastPromptLetter);
-                    if (filtered.length) pool = filtered;
-                }
-                const letter = pool[Math.floor(Math.random() * pool.length)];
-                learnState.promptLetter = letter;
-                learnState.lastPromptLetter = letter;
-                renderLearnPrompt();
-            }
-
-            function renderLearnPrompt(){
-                const letter = learnState.promptLetter;
-                if (!letter) {
-                    if (learnSymbolImg) learnSymbolImg.style.display = 'none';
-                    if (learnSymbolFallback) { learnSymbolFallback.style.display = ''; learnSymbolFallback.textContent = '•'; }
-                    return;
-                }
-                const src = `simbolos/${letter}.svg`;
-                if (learnSymbolImg) {
-                    learnSymbolImg.onload = () => {
-                        learnSymbolImg.style.display = '';
-                        if (learnSymbolFallback) learnSymbolFallback.style.display = 'none';
-                    };
-                    learnSymbolImg.onerror = () => {
-                        learnSymbolImg.style.display = 'none';
-                        if (learnSymbolFallback) { learnSymbolFallback.style.display = ''; learnSymbolFallback.textContent = letter.toUpperCase(); }
-                    };
-                    learnSymbolImg.src = src;
-                }
-            }
-
-            function normalizeLearnAnswer(txt){
-                if (!txt) return '';
-                let v = String(txt).trim().toLowerCase();
-                // aceita "letra a" ou só "a"
-                v = v.replace(/^letra\s+/, '');
-                v = v.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-                return v;
-            }
-
-            function computeLearnCycleProgress(){
-                const correctInCycle = learnState.correctTotal % 8;
-                learnState.treeProgress = correctInCycle / 8;
-                learnState.cycleCount = Math.floor(learnState.correctTotal / 8);
-                learnState.treePhase = learnState.cycleCount;
-                if (learnTreeCaption){
-                    const phases = [
-                        'Semente lançada no solo.',
-                        'A árvore recebe água e começa a germinar.',
-                        'O caule se firma e surgem folhas.',
-                        'Árvore grande. Um novo ciclo começa em seguida.'
-                    ];
-                    const stageIdx = Math.min(3, Math.floor(learnState.treeProgress * 4));
-                    learnTreeCaption.textContent = phases[stageIdx] + ` (Ciclos completos: ${learnState.cycleCount})`;
-                }
-            }
-
-            function drawLearnTree(){
-                if (!learnTreeCtx || !learnTreeCanvas) return;
-                const ctx = learnTreeCtx;
-                const w = learnTreeCanvas.width;
-                const h = learnTreeCanvas.height;
-                ctx.clearRect(0,0,w,h);
-
-                // fundo escuro com vinheta
-                const bg = ctx.createRadialGradient(w*0.5, h*0.4, 10, w*0.5, h*0.5, w*0.65);
-                bg.addColorStop(0, '#151515');
-                bg.addColorStop(1, '#070707');
-                ctx.fillStyle = bg;
-                ctx.fillRect(0,0,w,h);
-
-                // brilho de feedback (acerto/erro)
-                if (learnState.flash !== 0){
-                    const a = Math.min(0.22, Math.abs(learnState.flash) * 0.22);
-                    ctx.fillStyle = learnState.flash > 0 ? `rgba(120,255,120,${a})` : `rgba(255,100,100,${a})`;
-                    ctx.fillRect(0,0,w,h);
-                    learnState.flash *= 0.90;
-                    if (Math.abs(learnState.flash) < 0.02) learnState.flash = 0;
-                }
-
-                const light = Math.max(0.08, (worldState && worldState.lightLevel) ? worldState.lightLevel : 0.12);
-                // chão
-                const groundY = h*0.78;
-                ctx.fillStyle = `rgba(30,35,30,${0.85*light + 0.12})`;
-                ctx.fillRect(0, groundY, w, h-groundY);
-
-                // "lua" / luz ambiente
-                ctx.beginPath();
-                ctx.arc(w*0.78, h*0.18, 22, 0, Math.PI*2);
-                ctx.fillStyle = `rgba(220,200,120,${0.18 + light*0.35})`;
-                ctx.fill();
-
-                // progresso da árvore
-                const p = Math.max(0, Math.min(1, learnState.treeProgress || 0));
-                const stage = Math.floor(p * 4); // 0,1,2,3
-                const localP = (p * 4) - stage;
-
-                // sementes / água simples
-                if (stage >= 0){
-                    ctx.fillStyle = '#6b5a3a';
-                    ctx.beginPath();
-                    ctx.ellipse(w*0.5, groundY-3, 5, 3, 0, 0, Math.PI*2);
-                    ctx.fill();
-                }
-
-                if (stage >= 1){
-                    // gota d'água e umidade
-                    const dropY = h*0.35 + Math.sin(Date.now()*0.004) * 4;
-                    ctx.fillStyle = 'rgba(80,130,255,0.55)';
-                    ctx.beginPath();
-                    ctx.arc(w*0.35, dropY, 5, 0, Math.PI*2);
-                    ctx.fill();
-                    ctx.fillStyle = 'rgba(80,130,255,0.12)';
-                    ctx.fillRect(w*0.42, groundY-6, w*0.16, 8);
-                }
-
-                // caule
-                const trunkH = p <= 0.25 ? 0 : (p <= 0.5 ? (p-0.25)/0.25 * 38 : p <=0.75 ? 38 + (p-0.5)/0.25*45 : 83);
-                if (trunkH > 1){
-                    ctx.strokeStyle = '#7e5c35';
-                    ctx.lineWidth = 6;
-                    ctx.lineCap = 'round';
-                    ctx.beginPath();
-                    ctx.moveTo(w*0.5, groundY-2);
-                    ctx.lineTo(w*0.5, groundY-2-trunkH);
-                    ctx.stroke();
-                }
-
-                // folhas / copa
-                if (p > 0.45){
-                    const leafProgress = Math.min(1, (p - 0.45) / 0.55);
-                    const crownR = 12 + leafProgress * 34;
-                    const crownY = groundY-2-trunkH + 8;
-                    const hueShift = (learnState.treePhase % 5) * 8;
-                    const fill = `rgba(${40+hueShift}, ${130 + (learnState.combo%5)*8}, 60, 0.88)`;
-                    for (let n=0;n<6;n++){
-                        const ang = (Math.PI*2/6)*n + (Date.now()*0.0006);
-                        const rx = Math.cos(ang) * crownR * 0.45;
-                        const ry = Math.sin(ang) * crownR * 0.35;
-                        ctx.beginPath();
-                        ctx.arc(w*0.5 + rx, crownY + ry, crownR*0.45, 0, Math.PI*2);
-                        ctx.fillStyle = fill;
-                        ctx.fill();
-                    }
-                    ctx.beginPath();
-                    ctx.arc(w*0.5, crownY, crownR*0.52, 0, Math.PI*2);
-                    ctx.fillStyle = `rgba(50,160,70,0.9)`;
-                    ctx.fill();
-                }
-
-                // pequenas estrelas/pólen conforme combo
-                const sparkCount = Math.min(12, learnState.combo);
-                for (let s=0; s<sparkCount; s++){
-                    const t = (s * 997 + Date.now()*0.03) % 1000 / 1000;
-                    const x = w*(0.2 + ((s*37)%60)/100);
-                    const y = h*(0.15 + t*0.55);
-                    const r = 1 + (s % 3);
-                    ctx.fillStyle = 'rgba(180,220,140,0.25)';
-                    ctx.beginPath();
-                    ctx.arc(x, y, r, 0, Math.PI*2);
-                    ctx.fill();
-                }
-            }
-
-            function learnTick(){
-                if (currentView === 'learn') drawLearnTree();
-                requestAnimationFrame(learnTick);
-            }
-
-            function resetLearnSession(){
-                learnState.active = false;
-                learnState.gameOver = false;
-                learnState.score = 0;
-                learnState.combo = 0;
-                learnState.lives = 3;
-                learnState.answered = 0;
-                learnState.correctTotal = 0;
-                learnState.cycleCount = 0;
-                learnState.treeProgress = 0;
-                learnState.promptLetter = null;
-                learnState.lastPromptLetter = null;
-                showLearnFeedback('');
-                updateLearnHud();
-                computeLearnCycleProgress();
-                renderLearnPrompt();
-                setLearnOverlay('Etapa 1', 'Digite a letra correspondente ao símbolo que aparecer. Acertos seguidos aumentam os pontos. Você tem 3 vidas.', 'Começar', false);
-                if (learnAnswerInput) {
-                    learnAnswerInput.value = '';
-                    learnAnswerInput.disabled = false;
-                }
-                if (btnLearnSend) btnLearnSend.disabled = false;
-                renderLearnStages();
-            }
-
-            function startLearnStage(stageId){
-                learnState.currentStageId = stageId || 1;
-                learnState.active = true;
-                learnState.gameOver = false;
-                learnState.score = 0;
-                learnState.combo = 0;
-                learnState.lives = 3;
-                learnState.answered = 0;
-                learnState.correctTotal = 0;
-                learnState.treeProgress = 0;
-                showLearnFeedback('Boa sorte.', '');
-                updateLearnHud();
-                computeLearnCycleProgress();
-                renderLearnStages();
-                setLearnOverlay('', '', '', true);
-                if (learnAnswerInput){
-                    learnAnswerInput.value = '';
-                    learnAnswerInput.disabled = false;
-                    setTimeout(() => { try { learnAnswerInput.focus(); } catch(e){} }, 20);
-                }
-                if (btnLearnSend) btnLearnSend.disabled = false;
-                pickNextLearnPrompt();
-            }
-
-            function finishLearnGame(reasonText){
-                learnState.active = false;
-                learnState.gameOver = true;
-                setLearnHighScore(learnState.score);
-                updateLearnHud();
-                if (learnAnswerInput) learnAnswerInput.disabled = true;
-                if (btnLearnSend) btnLearnSend.disabled = true;
-                setLearnOverlay(
-                    'Etapa encerrada',
-                    `${reasonText || 'Fim de jogo.'} Pontos: ${learnState.score}. Sequência máx. aproximada: ${Math.max(learnState.combo, 0)}.`,
-                    'Jogar de novo',
-                    false
-                );
-            }
-
-            function submitLearnAnswer(){
-                if (currentView !== 'learn') return;
-                if (!learnState.active || learnState.gameOver) return;
-                const raw = learnAnswerInput ? learnAnswerInput.value : '';
-                const ans = normalizeLearnAnswer(raw);
-                if (!ans) {
-                    showLearnFeedback('Digite uma letra.', 'err');
-                    return;
-                }
-                const expected = normalizeLearnAnswer(learnState.promptLetter || '');
-                learnState.answered += 1;
-
-                if (ans === expected){
-                    learnState.combo += 1;
-                    learnState.correctTotal += 1;
-                    const gain = 1 + Math.min(12, learnState.combo);
-                    learnState.score += gain;
-                    computeLearnCycleProgress();
-                    learnState.flash = Math.max(learnState.flash, 1);
-                    showLearnFeedback(`Correto! +${gain} pontos`, 'ok');
-                    if (learnAnswerInput) learnAnswerInput.value = '';
-                    pickNextLearnPrompt();
-                } else {
-                    learnState.lives -= 1;
-                    learnState.combo = 0;
-                    learnState.flash = Math.min(learnState.flash, -1);
-                    showLearnFeedback(`Errado. Era "${(learnState.promptLetter || '').toUpperCase()}".`, 'err');
-                    if (learnAnswerInput) learnAnswerInput.value = '';
-                    if (learnState.lives <= 0){
-                        updateLearnHud();
-                        finishLearnGame('Você perdeu as 3 vidas.');
-                        return;
-                    }
-                    pickNextLearnPrompt();
-                }
-
-                updateLearnHud();
-                setLearnHighScore(learnState.score);
-                updateLearnHud();
-            }
-
-            function confirmExitLearnIfNeeded(){
-                if (currentView !== 'learn') return true;
-                const sessionRunning = !!(learnState.active && !learnState.gameOver);
-                if (!sessionRunning) {
-                    resetLearnSession();
-                    return true;
-                }
-                const ok = window.confirm('Sair do Aprender vai encerrar a etapa atual. Deseja continuar?');
-                if (!ok) return false;
-                resetLearnSession();
-                return true;
-            }
-
-            function openLearnView(){
-                if (currentView === 'world'){
-                    stopWorld();
-                    dockTranslator(false);
-                }
-                setView('learn');
-                resetLearnSession();
-                updateLearnHud();
-                drawLearnTree();
-                try { if (learnAnswerInput) learnAnswerInput.focus(); } catch(e){}
-            }
-
-            if (learnAnswerInput){
-                learnAnswerInput.addEventListener('keydown', (ev) => {
-                    if (ev.key === 'Enter'){
-                        ev.preventDefault();
-                        submitLearnAnswer();
-                    }
-                });
-            }
-            if (btnLearnSend){
-                btnLearnSend.addEventListener('click', submitLearnAnswer);
-            }
-            if (btnLearnOverlayAction){
-                btnLearnOverlayAction.addEventListener('click', () => {
-                    if (learnState.gameOver || !learnState.active){
-                        startLearnStage(learnState.currentStageId || 1);
-                    }
-                });
-            }
-            if (btnRestartLearn){
-                btnRestartLearn.addEventListener('click', () => {
-                    if (currentView !== 'learn') return;
-                    if (learnState.active && !learnState.gameOver){
-                        const ok = window.confirm('Reiniciar a etapa atual? A pontuação atual será perdida.');
-                        if (!ok) return;
-                    }
-                    startLearnStage(learnState.currentStageId || 1);
-                });
-            }
-            if (btnBackFromLearn){
-                btnBackFromLearn.addEventListener('click', () => {
-                    if (!confirmExitLearnIfNeeded()) return;
-                    setView('translator');
-                });
-            }
-            if (btnLearn){
-                btnLearn.addEventListener('click', () => {
-                    if (currentView === 'learn') return;
-                    if (currentView === 'world'){
-                        // troca de tela sem perder mundo; só pausa render
-                    }
-                    openLearnView();
-                });
-            }
-
-            renderLearnStages();
-            updateLearnHud();
-            computeLearnCycleProgress();
-            setLearnOverlay('Etapa 1', 'Escolha a primeira etapa. O símbolo aparecerá no centro e você digita a letra correspondente.', 'Começar', false);
-            renderLearnPrompt();
-            learnTick();
-
-function openWorldView(){
+            function openWorldView(){
                 if (!confirmExitLearnIfNeeded()) return;
                 setView('world');
-                dockTranslator(true);
                 startWorld();
                 refreshStageUI();
-                showToast('Bem-vindo ao mundo. As palavras têm efeito aqui.');
+                showToast('Sistema em foco. Digite um planeta para iniciar.');
             }
 
-            // Comando do mundo: aplica palavra e registra
-            
-function closeWorldView(){
+            function closeWorldView(){
                 if (!confirmExitLearnIfNeeded()) return;
                 stopWorld();
-                dockTranslator(false);
                 setView('translator');
                 flashHint('');
             }
 
             function openArchiveView(){
                 if (!confirmExitLearnIfNeeded()) return;
-                dockTranslator(false);
                 setView('archive');
                 renderArchiveList();
             }
 
-            // Badge “!”: clique para abrir o arquivo
             if (badgeWorld){
                 badgeWorld.addEventListener('click', (ev) => {
                     ev.stopPropagation();
@@ -1854,16 +1311,10 @@ function closeWorldView(){
                     openArchiveView();
                 });
             }
-            if (btnBackToTranslator){
-                btnBackToTranslator.addEventListener('click', closeWorldView);
-            }
+            if (btnBackToTranslator){ btnBackToTranslator.addEventListener('click', closeWorldView); }
             if (btnBackFromArchive){
                 btnBackFromArchive.addEventListener('click', () => {
-                    if (isWorldUnlocked()){
-                        setView('world');
-                    } else {
-                        setView('translator');
-                    }
+                    if (currentView === 'archive') setView('world');
                 });
             }
             if (btnClearNew){
@@ -1874,530 +1325,281 @@ function closeWorldView(){
                 });
             }
 
-            // ======= Mundo (canvas + parallax + etapas) =======
             let worldState = loadWorldState();
-
-            const PARALLAX = { x:0, y:0, tx:0, ty:0 };
             let worldRAF = 0;
             let worldRunning = false;
+            let draggingSpace = false;
+            let dragStartX = 0;
+            let dragStartCam = 0;
 
-            const starField = Array.from({length: 90}).map(() => ({
+            const starField = Array.from({length: 140}).map(() => ({
                 x: Math.random(),
                 y: Math.random(),
-                s: Math.random()*1.5 + 0.5
-            }));
-
-            // posições fixas (pra não “piscar”)
-            const landBlobs = Array.from({length: 18}).map(() => ({
-                x: Math.random()*2-1,
-                y: Math.random()*2-1,
-                w: 2 + Math.floor(Math.random()*2),
-                h: 1 + Math.floor(Math.random()*2)
-            }));
-            const vegBlobs = Array.from({length: 120}).map(() => ({
-                x: Math.random()*2-1,
-                y: Math.random()*2-1,
-                w: 1 + Math.floor(Math.random()*2),
-                h: 1 + Math.floor(Math.random()*2)
-            }));
-
-            const treeDots = Array.from({length: 18}).map(() => ({
-                x: Math.random()*2-1,
-                y: Math.random()*2-1
-            }));
-            const settlementDots = Array.from({length: 10}).map(() => ({
-                x: Math.random()*2-1,
-                y: Math.random()*2-1
+                s: Math.random()*1.7 + 0.4
             }));
 
             function resizeWorldCanvas(){
                 const dpr = window.devicePixelRatio || 1;
-
-                function fit(canvas){
-                    if(!canvas) return;
-                    const rect = canvas.getBoundingClientRect();
-                    canvas.width  = Math.max(240, Math.floor(rect.width  * dpr));
-                    canvas.height = Math.max(160, Math.floor(rect.height * dpr));
-                }
-
-                fit(orbitCanvas);
-                fit(topCanvas);
-                fit(sideCanvas);
+                if (!orbitCanvas) return;
+                const rect = orbitCanvas.getBoundingClientRect();
+                orbitCanvas.width  = Math.max(500, Math.floor(rect.width  * dpr));
+                orbitCanvas.height = Math.max(220, Math.floor(rect.height * dpr));
             }
-
             function lerp(a,b,t){ return a + (b-a)*t; }
-
             function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
-
             function lastWordFromText(raw){
                 const parts = (raw || '').trim().split(/\s+/).filter(Boolean);
                 if(!parts.length) return '';
                 return parts[parts.length-1];
             }
 
+            function isWorldUnlocked(){ return localStorage.getItem(WORLD_KEY) === '1'; }
+            function setWorldUnlocked(){ localStorage.setItem(WORLD_KEY, '1'); }
 
-            
-            function spawnHuman(){
-                worldState.humans = worldState.humans || [];
-                if (worldState.humans.length > 18) return;
-
-                worldState.humans.push({
-                    x: 0.2 + Math.random()*0.6,
-                    y: 0.45 + Math.random()*0.35,
-                    vx: (Math.random()<0.5?-1:1) * (0.012 + Math.random()*0.01),
-                    t: Math.random()*10
-                });
+            function getPlanetFeatures(key){
+                if (!worldState.planetFeatures[key]) worldState.planetFeatures[key] = [];
+                return worldState.planetFeatures[key];
             }
 
-            function updateHumans(){
-                const arr = worldState.humans || [];
-                for (const h of arr){
-                    h.t += 0.016;
-                    if (Math.random() < 0.01){ h.vx *= -1; }
-                    h.x += h.vx * 0.9;
-                    if (h.x < 0.08){ h.x = 0.08; h.vx = Math.abs(h.vx); }
-                    if (h.x > 0.92){ h.x = 0.92; h.vx = -Math.abs(h.vx); }
-                }
-            }
-
-function applyWordToWorld(norm){
-                const original = norm;
-                if (norm === 'humano'){
-                    norm = 'pessoas';
-                    worldState.features = worldState.features || {};
-                    worldState.features.pessoas = true;
-                    if (!(worldState.humans||[]).length) spawnHuman();
-                }
-
-                const stage = WORLD_CONFIG.stages[worldState.stageIndex] || WORLD_CONFIG.stages[WORLD_CONFIG.stages.length-1];
-
-                if (worldState.applied.includes(norm)){
-                    showToast('Essa palavra já deixou sua marca.');
-                    return false;
-                }
-
-                const allowed = new Set([...(stage.required||[]), ...(stage.unlocks||[])]);
-                if (!allowed.has(norm)){
-                    showToast('Nada aconteceu… (ainda não é a hora dessa palavra).');
-                    return false;
-                }
-
-                worldState.applied.push(norm);
-
-                // efeitos visuais simples
-                worldState.features = worldState.features || { light:false };
-                worldState.features[norm] = true;
-                if (norm === 'pessoas' && !(worldState.humans||[]).length) spawnHuman();
-
+            function ensurePlanetCreated(key){
+                if (!PLANET_BY_KEY[key]) return false;
+                if (!worldState.createdPlanets.includes(key)) worldState.createdPlanets.push(key);
+                worldState.activePlanet = key;
+                getPlanetFeatures(key);
                 saveWorldState(worldState);
-                addPrint((original==='humano'?'humano':norm), 'word', { stage: stage.id });
+                return true;
+            }
 
-                // checa conclusão de etapa
-                const done = (stage.required || []).every(w => worldState.applied.includes(w));
-                if (done && worldState.stageIndex < WORLD_CONFIG.stages.length - 1){
-                    showToast('Etapa concluída. O mundo se aproxima…');
-                    advanceStage();
-                } else {
-                    showToast('Registrado: ' + norm);
+            function tryUnlockWithText(txt){
+                if (normalizeWord(txt) !== normalizeWord(WORLD_CONFIG.unlockPhrase)) return false;
+                if (!worldState.lightOn){
+                    worldState.lightOn = true;
+                    worldState.lightLevel = Math.min(worldState.lightLevel || 0, 0.12);
+                    setWorldUnlocked();
+                    saveWorldState(worldState);
+                    addPrint(WORLD_CONFIG.unlockPhrase, 'ritual', { stage: 'estrela' });
+                    showBadge(badgeWorld);
+                    flashHint('A estrela acendeu. Agora digite um planeta (ex.: Terra, Marte, Saturno).');
+                    showToast('Luz ativada no sistema.');
+                }
+                return true;
+            }
+
+            function applyWordToWorld(norm){
+                if (!norm) return false;
+
+                if (norm === normalizeWord(WORLD_CONFIG.unlockPhrase)){
+                    return tryUnlockWithText(WORLD_CONFIG.unlockPhrase);
                 }
 
+                if (!worldState.lightOn){
+                    showToast('Tudo está apagado. Digite "Haja luz" para iluminar.');
+                    return false;
+                }
+
+                if (PLANET_WORDS.has(norm)){
+                    const wasCreated = worldState.createdPlanets.includes(norm);
+                    ensurePlanetCreated(norm);
+                    addPrint(norm, 'planet', { stage: 'sistema' });
+                    refreshStageUI();
+                    if (wasCreated) showToast(`${PLANET_BY_KEY[norm].label} selecionado.`);
+                    else showToast(`${PLANET_BY_KEY[norm].label} criado em modo base.`);
+                    return true;
+                }
+
+                const active = PLANET_BY_KEY[worldState.activePlanet];
+                if (!active || !worldState.createdPlanets.includes(active.key)){
+                    showToast('Digite primeiro o nome de um planeta.');
+                    return false;
+                }
+
+                const allowed = active.required.map(normalizeWord);
+                if (!allowed.includes(norm)){
+                    showToast(`"${norm}" não pertence ao conjunto de ${active.label}.`);
+                    return false;
+                }
+
+                const feats = getPlanetFeatures(active.key);
+                if (feats.includes(norm)){
+                    showToast('Esse atributo já foi registrado.');
+                    return false;
+                }
+
+                feats.push(norm);
+                saveWorldState(worldState);
+                addPrint(norm, 'feature', { stage: active.key });
+
+                const done = allowed.every(w => feats.includes(w));
+                if (done) showToast(`${active.label} completo.`);
+                else showToast(`Registrado em ${active.label}: ${norm}`);
                 refreshStageUI();
                 return true;
             }
 
-            function advanceStage(){
-                worldState.stageIndex = Math.min(worldState.stageIndex + 1, WORLD_CONFIG.stages.length - 1);
-                const st = WORLD_CONFIG.stages[worldState.stageIndex];
-                // anima câmera
-                worldState.cam = worldState.cam || { zoom:1.0, fx:0, fy:0 };
-                worldState.cam.zTarget = st.cam.zoom;
-                worldState.cam.fxTarget = st.cam.fx;
-                worldState.cam.fyTarget = st.cam.fy;
-                saveWorldState(worldState);
-                refreshStageUI();
-            }
-
             function refreshStageUI(){
-                const st = WORLD_CONFIG.stages[worldState.stageIndex] || WORLD_CONFIG.stages[0];
-                if (stageTitle) stageTitle.textContent = st.title;
-                if (stageDesc) stageDesc.textContent = st.desc;
+                const activeKey = worldState.activePlanet;
+                const active = PLANET_BY_KEY[activeKey];
+                const createdCount = worldState.createdPlanets.length;
+
+                if (stageTitle){
+                    stageTitle.textContent = active ? `Sistema Solar — ${active.label}` : 'Sistema Solar';
+                }
+                if (stageDesc){
+                    const lightMsg = worldState.lightOn ? 'Luz ativa.' : 'Luz desligada.';
+                    stageDesc.textContent = `${lightMsg} Digite “Haja luz”, depois um planeta e, em seguida, os atributos dele.`;
+                }
 
                 if (!checklist) return;
                 checklist.innerHTML = '';
 
+                const countInfo = document.createElement('div');
+                countInfo.style.color = '#777';
+                countInfo.style.margin = '8px 0';
+                countInfo.style.fontSize = '0.88rem';
+                countInfo.textContent = `Planetas criados: ${createdCount}/8`;
+                checklist.appendChild(countInfo);
+
+                const orderInfo = document.createElement('div');
+                orderInfo.style.color = '#666';
+                orderInfo.style.margin = '0 0 10px 0';
+                orderInfo.style.fontSize = '0.83rem';
+                orderInfo.textContent = 'Ordem real: Mercúrio → Vênus → Terra → Marte → Júpiter → Saturno → Urano → Netuno.';
+                checklist.appendChild(orderInfo);
+
+                if (!active){ return; }
+
                 const title = document.createElement('div');
-                title.style.color = '#777';
-                title.style.margin = '10px 0 8px 0';
+                title.style.color = '#888';
+                title.style.margin = '8px 0 6px 0';
                 title.style.fontSize = '0.9rem';
-                title.textContent = 'Palavras desta etapa:';
+                title.textContent = `Atributos de ${active.label}:`;
                 checklist.appendChild(title);
 
-                (st.required || []).forEach(w => {
+                const feats = getPlanetFeatures(active.key);
+                active.required.forEach(req => {
+                    const norm = normalizeWord(req);
                     const row = document.createElement('div');
                     row.className = 'word-item';
-
                     const box = document.createElement('span');
-                    box.className = 'chk' + (worldState.applied.includes(w) ? ' done' : '');
-                    row.appendChild(box);
-
+                    box.className = 'chk' + (feats.includes(norm) ? ' done' : '');
                     const t = document.createElement('span');
                     t.className = 'word-tag';
-                    t.textContent = w;
+                    t.textContent = req;
+                    row.appendChild(box);
                     row.appendChild(t);
-
                     checklist.appendChild(row);
                 });
-
-                if ((st.unlocks || []).length){
-                    const sub = document.createElement('div');
-                    sub.style.color = '#666';
-                    sub.style.margin = '10px 0 6px 0';
-                    sub.style.fontSize = '0.88rem';
-                    sub.textContent = 'Depois, tente também:';
-                    checklist.appendChild(sub);
-
-                    (st.unlocks || []).forEach(w => {
-                        const row = document.createElement('div');
-                        row.className = 'word-item';
-
-                        const box = document.createElement('span');
-                        box.className = 'chk' + (worldState.applied.includes(w) ? ' done' : '');
-                        row.appendChild(box);
-
-                        const t = document.createElement('span');
-                        t.className = 'word-tag';
-                        t.textContent = w;
-                        row.appendChild(t);
-
-                        checklist.appendChild(row);
-                    });
-                }
             }
 
-            function drawWorld(dt){
+            function drawWorld(){
+                if (!orbitCanvas) return;
+                const ctx = orbitCanvas.getContext('2d');
+                const w = orbitCanvas.width;
+                const h = orbitCanvas.height;
+                if (!ctx || !w || !h) return;
+
+                ctx.setTransform(1,0,0,1,0,0);
+                ctx.clearRect(0,0,w,h);
+
                 const light = clamp(worldState.lightLevel || 0, 0, 1);
 
-                // parallax easing
-                PARALLAX.x = lerp(PARALLAX.x, PARALLAX.tx, 0.08);
-                PARALLAX.y = lerp(PARALLAX.y, PARALLAX.ty, 0.08);
+                const sky = ctx.createLinearGradient(0,0,0,h);
+                sky.addColorStop(0, `rgba(${8+Math.floor(18*light)},${8+Math.floor(18*light)},${16+Math.floor(24*light)},1)`);
+                sky.addColorStop(1, '#050509');
+                ctx.fillStyle = sky;
+                ctx.fillRect(0,0,w,h);
 
-                // ========= ORBITA (canvas 1) =========
-                if (orbitCanvas){
-                    const octx = orbitCanvas.getContext('2d');
-                    const w = orbitCanvas.width;
-                    const h = orbitCanvas.height;
-                    if (octx && w && h){
-                        octx.setTransform(1,0,0,1,0,0);
-                        octx.clearRect(0,0,w,h);
-
-                        // low-res buffer pra pixelar (bonito e barato)
-                        const low = drawWorld._lowOrbit || (drawWorld._lowOrbit = document.createElement('canvas'));
-                        const lw = Math.max(180, Math.floor(w / 4));
-                        const lh = Math.max(120, Math.floor(h / 4));
-                        if (low.width !== lw || low.height !== lh){
-                            low.width = lw; low.height = lh;
-                        }
-                        const lctx = low.getContext('2d');
-                        lctx.imageSmoothingEnabled = false;
-                        lctx.clearRect(0,0,lw,lh);
-
-                        // fundo
-                        lctx.fillStyle = '#000';
-                        lctx.fillRect(0,0,lw,lh);
-
-                        // estrelas (um pouco mais vivas quando há luz)
-                        for (const s of starField){
-                            const sx = (s.x * lw) + PARALLAX.x * 3;
-                            const sy = (s.y * lh) + PARALLAX.y * 2;
-                            const br = Math.floor(40 + 80 * light);
-                            lctx.fillStyle = `rgb(${br},${br},${br})`;
-                            lctx.fillRect((Math.floor(sx)%lw+lw)%lw, (Math.floor(sy)%lh+lh)%lh, 1, 1);
-                        }
-
-                        // sol
-                        const sunX = lw * 0.84 + PARALLAX.x * 6;
-                        const sunY = lh * 0.22 + PARALLAX.y * 4;
-                        const sunR = 9;
-                        if (light > 0.02){
-                            lctx.fillStyle = '#d7b300';
-                            lctx.beginPath(); lctx.arc(sunX, sunY, sunR, 0, Math.PI*2); lctx.fill();
-
-                            // glow
-                            lctx.globalAlpha = 0.22 * light;
-                            lctx.fillStyle = '#a88a00';
-                            lctx.beginPath(); lctx.arc(sunX, sunY, sunR*2.2, 0, Math.PI*2); lctx.fill();
-                            lctx.globalAlpha = 1;
-                        } else {
-                            lctx.fillStyle = '#111';
-                            lctx.beginPath(); lctx.arc(sunX, sunY, sunR, 0, Math.PI*2); lctx.fill();
-                        }
-
-                        // planeta (mais bonito: base + oceano + terra + vegetacao + atmosfera)
-                        const cx = lw * (0.46) + PARALLAX.x * 1.2;
-                        const cy = lh * (0.58) + PARALLAX.y * 1.0;
-                        const r = Math.min(lw,lh) * 0.28;
-
-                        // sombra
-                        lctx.fillStyle = '#0b0b0b';
-                        lctx.beginPath(); lctx.arc(cx+3, cy+3, r*1.02, 0, Math.PI*2); lctx.fill();
-
-                        // base do planeta
-                        lctx.fillStyle = '#111';
-                        lctx.beginPath(); lctx.arc(cx, cy, r, 0, Math.PI*2); lctx.fill();
-
-                        // clip no planeta
-                        lctx.save();
-                        lctx.beginPath(); lctx.arc(cx, cy, r, 0, Math.PI*2); lctx.clip();
-
-                        // oceano
-                        if (worldState.features.agua){
-                            lctx.fillStyle = '#081b2f';
-                            lctx.fillRect(cx-r, cy-r, r*2, r*2);
-                        } else {
-                            lctx.fillStyle = '#111';
-                            lctx.fillRect(cx-r, cy-r, r*2, r*2);
-                        }
-
-                        // terra
-                        if (worldState.features.terra){
-                            lctx.fillStyle = '#1a3a24';
-                            for (const b of landBlobs){
-                                const px = cx + b.x * r*0.82;
-                                const py = cy + b.y * r*0.70;
-                                if ((px-cx)**2 + (py-cy)**2 < (r*0.92)**2){
-                                    lctx.fillRect(Math.floor(px), Math.floor(py), b.w, b.h);
-                                }
-                            }
-                        }
-
-                        // vegetacao (do espaço: manchas verdes)
-                        if (worldState.features.arvores){
-                            lctx.fillStyle = '#1f5b2b';
-                            for (const g of vegBlobs){
-                                const px = cx + g.x * r*0.86;
-                                const py = cy + g.y * r*0.74;
-                                if ((px-cx)**2 + (py-cy)**2 < (r*0.92)**2){
-                                    lctx.fillRect(Math.floor(px), Math.floor(py), g.w, g.h);
-                                }
-                            }
-                        }
-
-                        // iluminação vinda do sol (overlay simples)
-                        if (light > 0.02){
-                            lctx.globalAlpha = 0.26 * light;
-                            lctx.fillStyle = '#ffffff';
-                            lctx.beginPath();
-                            lctx.arc(cx - r*0.25, cy - r*0.20, r*1.10, 0, Math.PI*2);
-                            lctx.fill();
-
-                            lctx.globalAlpha = 0.55;
-                            lctx.fillStyle = '#000';
-                            lctx.beginPath();
-                            lctx.arc(cx + r*0.55, cy + r*0.20, r*1.05, 0, Math.PI*2);
-                            lctx.fill();
-                            lctx.globalAlpha = 1;
-                        } else {
-                            lctx.globalAlpha = 0.78;
-                            lctx.fillStyle = '#000';
-                            lctx.fillRect(cx-r, cy-r, r*2, r*2);
-                            lctx.globalAlpha = 1;
-                        }
-
-                        lctx.restore(); // clip
-
-                        // atmosfera
-                        if (worldState.features.atmosfera){
-                            lctx.globalAlpha = 0.25 + 0.35*light;
-                            lctx.strokeStyle = light > 0.02 ? '#2b6aa3' : '#222';
-                            lctx.lineWidth = 2;
-                            lctx.beginPath(); lctx.arc(cx, cy, r*1.06, 0, Math.PI*2); lctx.stroke();
-                            lctx.globalAlpha = 1;
-                        }
-
-                        // upscale pixelado
-                        octx.imageSmoothingEnabled = false;
-                        octx.drawImage(low, 0, 0, w, h);
-                    }
+                for (const s of starField){
+                    const alpha = 0.2 + light * 0.7;
+                    ctx.fillStyle = `rgba(220,225,255,${alpha})`;
+                    ctx.fillRect(s.x*w, s.y*h*0.75, s.s, s.s);
                 }
 
-                // ========= TOPO-DOWN (canvas 2) =========
-                if (topCanvas){
-                    const tctx = topCanvas.getContext('2d');
-                    const w = topCanvas.width;
-                    const h = topCanvas.height;
-                    if (tctx && w && h){
-                        const low = drawWorld._lowTop || (drawWorld._lowTop = document.createElement('canvas'));
-                        const lw = Math.max(180, Math.floor(w / 3));
-                        const lh = Math.max(120, Math.floor(h / 3));
-                        if (low.width !== lw || low.height !== lh){ low.width = lw; low.height = lh; }
-                        const lctx = low.getContext('2d');
-                        lctx.imageSmoothingEnabled = false;
-                        lctx.clearRect(0,0,lw,lh);
+                const centerY = h * 0.56;
+                const spacing = Math.max(220, Math.floor(w * 0.18));
+                const sunX = w * 0.18 - worldState.camX;
 
-                        const dim = 0.10 + 0.90*light;
-                        lctx.fillStyle = '#000';
-                        lctx.fillRect(0,0,lw,lh);
-
-                        if (worldState.features.terra){
-                            const r0 = Math.floor(24*dim);
-                            const g0 = Math.floor(38*dim);
-                            const b0 = Math.floor(26*dim);
-                            lctx.fillStyle = `rgb(${r0},${g0},${b0})`;
-                            lctx.fillRect(0, Math.floor(lh*0.24), lw, Math.floor(lh*0.76));
-
-                            lctx.fillStyle = `rgba(0,0,0,${0.16})`;
-                            for (let i=0;i<220;i++){
-                                const x = (i*37)%lw;
-                                const y = Math.floor(lh*0.24) + (i*19)%Math.floor(lh*0.76);
-                                lctx.fillRect(x, y, 1, 1);
-                            }
-                        }
-
-                        if (worldState.features.agua){
-                            const bx = Math.floor(lw*0.18), by = Math.floor(lh*0.56);
-                            const bw = Math.floor(lw*0.38), bh = Math.floor(lh*0.20);
-                            lctx.fillStyle = `rgb(${Math.floor(6*dim)},${Math.floor(30*dim)},${Math.floor(55*dim)})`;
-                            lctx.fillRect(bx, by, bw, bh);
-                            lctx.fillStyle = `rgba(255,255,255,${0.06*dim})`;
-                            lctx.fillRect(bx+2, by+2, bw-4, 1);
-                        }
-
-                        if (worldState.features.arvores){
-                            lctx.fillStyle = `rgb(${Math.floor(20*dim)},${Math.floor(95*dim)},${Math.floor(35*dim)})`;
-                            for (let i=0;i<55;i++){
-                                const x = Math.floor((i*53)%lw);
-                                const y = Math.floor(lh*0.26) + Math.floor((i*29)%Math.floor(lh*0.70));
-                                if (Math.random() < 0.55) lctx.fillRect(x, y, 1, 1);
-                            }
-                        }
-
-                        if (worldState.features.pessoas){
-                            const arr = worldState.humans || [];
-                            const baseY = Math.floor(lh*0.65);
-                            for (const hmn of arr){
-                                const x = Math.floor(hmn.x * lw);
-                                const y = Math.floor(baseY + (hmn.y-0.55)*lh*0.15);
-                                lctx.fillStyle = `rgb(${Math.floor(190*dim)},${Math.floor(190*dim)},${Math.floor(190*dim)})`;
-                                lctx.fillRect(x, y, 1, 2);
-                            }
-                        }
-
-                        if (light < 0.02){
-                            lctx.globalAlpha = 0.88;
-                            lctx.fillStyle = '#000';
-                            lctx.fillRect(0,0,lw,lh);
-                            lctx.globalAlpha = 1;
-                        }
-
-                        tctx.setTransform(1,0,0,1,0,0);
-                        tctx.clearRect(0,0,w,h);
-                        tctx.imageSmoothingEnabled = false;
-                        tctx.drawImage(low, 0, 0, w, h);
-                    }
+                const sunR = Math.max(16, Math.floor(h * 0.07));
+                if (worldState.lightOn){
+                    const glow = ctx.createRadialGradient(sunX, centerY, sunR*0.3, sunX, centerY, sunR*4.2);
+                    glow.addColorStop(0, `rgba(255,210,90,${0.75*light + 0.2})`);
+                    glow.addColorStop(1, 'rgba(255,180,40,0)');
+                    ctx.fillStyle = glow;
+                    ctx.beginPath();
+                    ctx.arc(sunX, centerY, sunR*4.2, 0, Math.PI*2);
+                    ctx.fill();
                 }
+                ctx.fillStyle = worldState.lightOn ? '#f7d36b' : '#1b1b1f';
+                ctx.beginPath();
+                ctx.arc(sunX, centerY, sunR, 0, Math.PI*2);
+                ctx.fill();
 
-                // ========= SIDE-VIEW (canvas 3) =========
-                if (sideCanvas){
-                    const sctx = sideCanvas.getContext('2d');
-                    const w = sideCanvas.width;
-                    const h = sideCanvas.height;
-                    if (sctx && w && h){
-                        const low = drawWorld._lowSide || (drawWorld._lowSide = document.createElement('canvas'));
-                        const lw = Math.max(200, Math.floor(w / 3));
-                        const lh = Math.max(120, Math.floor(h / 3));
-                        if (low.width !== lw || low.height !== lh){ low.width = lw; low.height = lh; }
-                        const lctx = low.getContext('2d');
-                        lctx.imageSmoothingEnabled = false;
-                        lctx.clearRect(0,0,lw,lh);
+                WORLD_CONFIG.planets.forEach((planet, idx) => {
+                    const px = sunX + (idx + 1) * spacing;
+                    const py = centerY;
+                    const created = worldState.createdPlanets.includes(planet.key);
+                    const selected = worldState.activePlanet === planet.key;
+                    const radius = clamp((planet.size <= 1 ? 12 + planet.size*5 : 16 + Math.log(planet.size)*8), 10, 32);
 
-                        const dim = 0.10 + 0.90*light;
+                    let fill = '#111216';
+                    if (worldState.lightOn && created){ fill = planet.color; }
+                    else if (worldState.lightOn){ fill = '#272833'; }
 
-                        const skyTop = Math.floor(8*dim);
-                        const skyMid = Math.floor(18*dim);
-                        lctx.fillStyle = `rgb(${skyTop},${skyTop},${skyMid})`;
-                        lctx.fillRect(0,0,lw,lh);
+                    ctx.fillStyle = fill;
+                    ctx.beginPath();
+                    ctx.arc(px, py, radius, 0, Math.PI*2);
+                    ctx.fill();
 
-                        if (light > 0.02){
-                            lctx.globalAlpha = 0.22*light;
-                            lctx.fillStyle = '#d7b300';
-                            lctx.fillRect(Math.floor(lw*0.78), 0, Math.floor(lw*0.22), lh);
-                            lctx.globalAlpha = 1;
-                        }
-
-                        const groundY = Math.floor(lh*0.70);
-
-                        if (worldState.features.terra){
-                            lctx.fillStyle = `rgb(${Math.floor(26*dim)},${Math.floor(40*dim)},${Math.floor(28*dim)})`;
-                            lctx.fillRect(0, groundY, lw, lh-groundY);
-
-                            lctx.fillStyle = `rgba(0,0,0,${0.18})`;
-                            for (let i=0;i<160;i++){
-                                const x = (i*23)%lw;
-                                const y = groundY + (i*11)%Math.max(1, lh-groundY);
-                                lctx.fillRect(x,y,1,1);
-                            }
-                        }
-
-                        if (worldState.features.agua){
-                            lctx.fillStyle = `rgb(${Math.floor(8*dim)},${Math.floor(28*dim)},${Math.floor(55*dim)})`;
-                            lctx.fillRect(Math.floor(lw*0.18), groundY-6, Math.floor(lw*0.22), 6);
-                        }
-
-                        if (worldState.features.arvores){
-                            lctx.fillStyle = `rgb(${Math.floor(18*dim)},${Math.floor(85*dim)},${Math.floor(30*dim)})`;
-                            for (let i=0;i<10;i++){
-                                const x = Math.floor((i*29)%lw);
-                                lctx.fillRect(x, groundY-10, 2, 10);
-                                lctx.fillRect(x-2, groundY-12, 6, 3);
-                            }
-                        }
-
-                        if (worldState.features.pessoas){
-                            const arr = worldState.humans || [];
-                            for (const hmn of arr){
-                                const x = Math.floor(hmn.x * lw);
-                                const y = groundY-8;
-                                lctx.fillStyle = `rgb(${Math.floor(200*dim)},${Math.floor(200*dim)},${Math.floor(200*dim)})`;
-                                lctx.fillRect(x, y, 2, 6);
-                                lctx.fillRect(x, y-2, 2, 2);
-                                const step = (Math.floor(hmn.t*6)%2);
-                                lctx.fillRect(x- (step?0:1), y+6, 1, 2);
-                                lctx.fillRect(x+1 + (step?0:1), y+6, 1, 2);
-                            }
-                        }
-
-                        if (light < 0.02){
-                            lctx.globalAlpha = 0.88;
-                            lctx.fillStyle = '#000';
-                            lctx.fillRect(0,0,lw,lh);
-                            lctx.globalAlpha = 1;
-                        }
-
-                        sctx.setTransform(1,0,0,1,0,0);
-                        sctx.clearRect(0,0,w,h);
-                        sctx.imageSmoothingEnabled = false;
-                        sctx.drawImage(low, 0, 0, w, h);
+                    if (planet.key === 'saturno'){
+                        ctx.strokeStyle = worldState.lightOn ? 'rgba(220,210,170,0.65)' : 'rgba(80,80,80,0.45)';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.ellipse(px, py, radius*1.8, radius*0.58, -0.24, 0, Math.PI*2);
+                        ctx.stroke();
                     }
-                }
+
+                    if (selected){
+                        ctx.strokeStyle = '#8cff8c';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.arc(px, py, radius + 5, 0, Math.PI*2);
+                        ctx.stroke();
+                    }
+
+                    if (created && worldState.lightOn){
+                        const req = planet.required.map(normalizeWord);
+                        const done = req.every(r => getPlanetFeatures(planet.key).includes(r));
+                        ctx.fillStyle = done ? '#77ff77' : '#cccc66';
+                        ctx.fillRect(px - 2, py + radius + 6, 4, 4);
+                    }
+
+                    ctx.fillStyle = '#8f8f95';
+                    ctx.font = '12px Courier New, monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(planet.label, px, py + radius + 20);
+                });
             }
 
             function worldLoop(ts){
                 if (!worldRunning) return;
-                // dt normalizado
                 worldLoop._last = worldLoop._last || ts || performance.now();
                 const now = ts || performance.now();
                 const dt = Math.min(0.05, (now - worldLoop._last) / 1000);
                 worldLoop._last = now;
 
-                // light fade
-                const targetLight = worldState.features.light ? 1 : 0;
-                worldState.lightLevel = lerp(worldState.lightLevel || 0, targetLight, 0.035);
+                const targetLight = worldState.lightOn ? 1 : 0;
+                worldState.lightLevel = lerp(worldState.lightLevel || 0, targetLight, 0.03);
+                worldState.camX = lerp(worldState.camX || 0, worldState.camTargetX || 0, Math.min(0.18, dt * 8));
 
-                updateHumans();
-
-                drawWorld(dt);
-
+                drawWorld();
                 worldRAF = requestAnimationFrame(worldLoop);
+            }
+
+            function clampSpaceTarget(x){
+                if (!orbitCanvas) return x;
+                const spacing = Math.max(220, Math.floor(orbitCanvas.width * 0.18));
+                const max = spacing * 7 + orbitCanvas.width * 0.2;
+                return clamp(x, -orbitCanvas.width*0.08, max);
             }
 
             function startWorld(){
@@ -2406,16 +1608,21 @@ function applyWordToWorld(norm){
                 resizeWorldCanvas();
                 window.addEventListener('resize', resizeWorldCanvas);
                 if (worldCanvasWrap){
-                    worldCanvasWrap.addEventListener('mousemove', (ev) => {
-                        const rect = worldCanvasWrap.getBoundingClientRect();
-                        const nx = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
-                        const ny = ((ev.clientY - rect.top) / rect.height) * 2 - 1;
-                        PARALLAX.tx = nx * 4;
-                        PARALLAX.ty = ny * 3;
-                    });
-                    worldCanvasWrap.addEventListener('mouseleave', () => {
-                        PARALLAX.tx = 0;
-                        PARALLAX.ty = 0;
+                    worldCanvasWrap.onwheel = (ev) => {
+                        ev.preventDefault();
+                        worldState.camTargetX = clampSpaceTarget((worldState.camTargetX || 0) + ev.deltaY * 0.8);
+                        saveWorldState(worldState);
+                    };
+                    worldCanvasWrap.onmousedown = (ev) => {
+                        draggingSpace = true;
+                        dragStartX = ev.clientX;
+                        dragStartCam = worldState.camTargetX || 0;
+                    };
+                    window.addEventListener('mouseup', () => draggingSpace = false);
+                    window.addEventListener('mousemove', (ev) => {
+                        if (!draggingSpace) return;
+                        const dx = ev.clientX - dragStartX;
+                        worldState.camTargetX = clampSpaceTarget(dragStartCam - dx * 2.2);
                     });
                 }
                 worldLoop();
@@ -2425,6 +1632,7 @@ function applyWordToWorld(norm){
                 worldRunning = false;
                 cancelAnimationFrame(worldRAF);
                 window.removeEventListener('resize', resizeWorldCanvas);
+                saveWorldState(worldState);
             }
 
             // ======= Arquivo / Dicionário =======
@@ -2649,18 +1857,11 @@ function applyWordToWorld(norm){
             }
 
 
-            function isWorldUnlocked(){
-                return localStorage.getItem(WORLD_KEY) === '1';
-            }
-            function setWorldUnlocked(){
-                localStorage.setItem(WORLD_KEY, '1');
-            }
-
             function flashHint(msg){
                 if(!hintLine) return;
                 hintLine.textContent = msg || '';
                 hintLine.classList.remove('flash');
-                void hintLine.offsetWidth; // reflow
+                void hintLine.offsetWidth;
                 hintLine.classList.add('flash');
             }
 
@@ -2674,80 +1875,41 @@ function applyWordToWorld(norm){
                 el.classList.add('hidden');
             }
 
-            function askUnlockWorld(){
-                currentAction = 'unlockWorld';
-                setSendButtonVisible(true);
-                flashHint('Digite "Haja luz" e clique na seta ➤. Depois, clique no losango 🌍.');
-                input.focus();
-                input.setSelectionRange(input.value.length, input.value.length);
-            }
-
-            function openWorldPlaceholder(){
-                // V4: abre a tela do mundo
-                openWorldView();
-            }
-
             btnHistory.addEventListener('click', () => {
                 if (!confirmExitLearnIfNeeded()) return;
                 openScroll();
 
                 const name = getStoredName();
-                if (!name) {
-                    renderNeedName();
-                } else {
-                    renderLetter(name);
-                }
+                if (!name) renderNeedName();
+                else renderLetter(name);
             });
 
             if (btnWorld) {
                 btnWorld.addEventListener('click', () => {
                     if (currentView === 'learn' && !confirmExitLearnIfNeeded()) return;
-                    if (!isWorldUnlocked()) {
-                        askUnlockWorld();
-                        return;
-                    }
-                    openWorldPlaceholder();
+                    openWorldView();
                 });
             }
-// Enviar pelo botão (sempre presente) — usado para “nome” e para rituais (ex.: desbloquear mundo)
+
             sendNameBtn.addEventListener('click', () => {
                 const txt = (input.value || '').trim();
 
-                // 1) Captura de nome
                 if (currentAction === 'name') {
                     if (!txt) return;
-
                     setStoredName(txt);
                     renderLetter(txt);
                     openScroll();
                     return;
                 }
 
-                // 2) Ritual de desbloqueio do mundo
-                if (currentAction === 'unlockWorld') {
-                    if (!txt) { flashHint('Digite "Haja luz" e clique na seta ➤.'); return; }
+                if (!txt) return;
 
-                    if (normalizeWord(txt) === normalizeWord(WORLD_CONFIG.unlockPhrase)) {
-                        setWorldUnlocked();
-                        currentAction = '';
-                        // liga a luz do mundo
-                        worldState.features.light = true;
-                        worldState.lightLevel = Math.min(worldState.lightLevel || 0, 0.15);
-                        saveWorldState(worldState);
-
-                        // registra “print” do ritual
-                        addPrint(WORLD_CONFIG.unlockPhrase, 'ritual', { stage: 'unlock' });
-
-                        setSendButtonVisible(false);
-                        showBadge(badgeWorld);
-                        flashHint('Desbloqueado! Clique no losango 🌍 (ou digite uma palavra e aperte ➤).');
-                    } else {
-                        flashHint('Frase incorreta. O ritual pede exatamente: "Haja luz".');
-                    }
+                if (tryUnlockWithText(txt)) {
+                    if (currentView !== 'world') openWorldView();
+                    refreshStageUI();
                     return;
                 }
 
-                // 3) Se estamos na tela do mundo, a seta aplica a palavra ao mundo
                 if (currentView === 'world') {
                     const word = normalizeWord(lastWordFromText(txt));
                     if (!word) { showToast('Digite uma palavra.'); return; }
@@ -2755,18 +1917,12 @@ function applyWordToWorld(norm){
                     return;
                 }
 
-                // 3.1) Conveniência: se o mundo já está desbloqueado, a seta pode aplicar comandos mesmo fora dele
-                // (usa a ÚLTIMA palavra digitada no tradutor)
-                if (isWorldUnlocked()) {
-                    const word = normalizeWord(lastWordFromText(txt));
-                    if (word && isWorldCommand(word) && word !== normalizeWord(WORLD_CONFIG.unlockPhrase)) {
-                        openWorldView();
-                        applyWordToWorld(word);
-                        return;
-                    }
+                const word = normalizeWord(lastWordFromText(txt));
+                if (word && isWorldCommand(word)) {
+                    openWorldView();
+                    applyWordToWorld(word);
+                    return;
                 }
-
-                // 4) Fora disso, a tradução é automática (a seta não precisa fazer nada)
             });
 // Fechar ao clicar fora do pergaminho
             scrollOverlay.addEventListener('click', (e) => {
@@ -2798,26 +1954,18 @@ function applyWordToWorld(norm){
         <div class="view-body">
             <div class="world-canvas-wrap">
                 <div id="worldCanvasWrap" class="world-canvas-stack">
-                    <div class="world-orbit">
+                    <div class="world-orbit" aria-label="Navegação no sistema solar">
                         <canvas id="orbitCanvas"></canvas>
-                    </div>
-                    <div class="world-subs" aria-label="Visões aproximadas">
-                        <div class="world-sub" aria-label="Visão de cima (drone)">
-                            <canvas id="topCanvas"></canvas>
-                        </div>
-                        <div class="world-sub" aria-label="Visão lateral (plataforma)">
-                            <canvas id="sideCanvas"></canvas>
-                        </div>
                     </div>
                 </div>
                 <div id="worldToast" class="world-toast hidden"></div>
             </div>
 
             <div class="world-panel">
-                <h3 id="stageTitle">Um mundo vazio</h3>
-                <p id="stageDesc">Escreva as palavras certas para tornar o planeta habitável.</p>
+                <h3 id="stageTitle">Sistema Solar</h3>
+                <p id="stageDesc">Digite “Haja luz”, depois o nome de um planeta e seus atributos.</p>
                 <div id="checklist"></div>
-                <div class="world-help">Dica: digite no tradutor (na tela principal) e clique na seta ➤. A última palavra digitada vira ação no mundo.</div>
+                <div class="world-help">Navegação: use o scroll do mouse (ou clique e arraste) para avançar/voltar pela linha dos planetas.</div>
             </div>
         </div>
     </div>
